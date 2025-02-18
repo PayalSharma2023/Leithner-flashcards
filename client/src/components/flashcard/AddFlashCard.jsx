@@ -1,120 +1,84 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
+
 const API_URL = "http://localhost:3000/flashcards";
-// eslint-disable-next-line react/prop-types
-const AddFlashCard = ({ handler }) => {
-  const [currentCards, setCurrentCards] = useState([]);
-  const [textAreaFront, setTextAreaFront] = useState("");
-  const [textAreaBack, setTextAreaBack] = useState("");
-  const [frontError, setFrontError] = useState("");
-  const [backError, setBackError] = useState("");
+
+const FlashcardApp = () => {
+  const [flashcards, setFlashcards] = useState([]);
   const [question, setQuestion] = useState("");
-    const [answer, setAnswer] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  const [answer, setAnswer] = useState("");
 
-  const validate = () => {
-    let isError = false;
-    setFrontError("");
-    setBackError("");
+  // Fetch flashcards from the backend
+  useEffect(() => {
+    const fetchFlashcards = async () => {
+      const res = await axios.get(API_URL);
+      console.log(res.data)
+      setFlashcards(res.data);
+    };
+    fetchFlashcards();
+  }, []);
 
-    if (textAreaFront.trim() === "") {
-      setFrontError("Front side must have input");
-      isError = true;
-    }
-    if (textAreaBack.trim() === "") {
-      setBackError("Back side must have input");
-      isError = true;
-    }
-    return isError;
-  };
+  // Add Flashcard
   const addFlashcard = async (e) => {
     e.preventDefault();
-    if (!validate()) {
-      const newCard = { front: textAreaFront, back: textAreaBack };
-      setCurrentCards([...currentCards, newCard]);
-      handler([...currentCards, newCard]); // Send to parent
-      setTextAreaFront("");
-      setTextAreaBack("");
-      setIsOpen(false);
-    }
     if (!question || !answer) return;
-    await axios.post(API_URL, { question, answer });
+    const res = await axios.post(API_URL, { question, answer });
+    setFlashcards([...flashcards, res.data]);
     setQuestion("");
     setAnswer("");
   };
+
+  // Delete Flashcard
+  const deleteFlashcard = async (id) => {
+    await axios.delete(`${API_URL}/${id}`);
+    setFlashcards(flashcards.filter((card) => card._id !== id));
+  };
+
   return (
-    <>
-      {/* Button to open modal */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(true)}
-        className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition-all"
-      >
-        + Add Flashcard
-      </motion.button>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Flashcard App</h1>
+      
+      <form onSubmit={addFlashcard} className="mb-4">
+        <input
+          type="text"
+          placeholder="Question"
+          className="border p-2 rounded mr-2"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Answer"
+          className="border p-2 rounded mr-2"
+          value={answer}
+          onChange={(e) => setAnswer(e.target.value)}
+        />
+        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">Add</button>
+      </form>
 
-      {/* Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+      <div className="grid gap-4">
+        {flashcards.map((card) => (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            key={card._id}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="bg-background p-6 rounded-lg shadow-lg w-96"
+            exit={{ opacity: 0, y: -10 }}
+            className="p-4 border rounded shadow"
           >
-            <h3 className="text-xl font-bold text-primary">Add Flashcard</h3>
-
-            {/* Flashcard Form */}
-            <form className="mt-4">
-              <div className="mb-3">
-                <label className="text-text font-semibold">Front:</label>
-                <textarea
-                  className="w-full mt-1 p-2 rounded-lg bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-100"
-                  value={textAreaFront}
-                  onChange={(e) => setTextAreaFront(e.target.value)}
-                  placeholder="Enter front side text"
-                />
-                {frontError && <p className="text-red-500">{frontError}</p>}
-              </div>
-
-              <div className="mb-3">
-                <label className="text-text font-semibold">Back:</label>
-                <textarea
-                  className="w-full mt-1 p-2 rounded-lg bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-100"
-                  value={textAreaBack}
-                  onChange={(e) => setTextAreaBack(e.target.value)}
-                  placeholder="Enter back side text"
-                />
-                {backError && <p className="text-red-500">{backError}</p>}
-              </div>
-
-              {/* Buttons */}
-              <div className="flex justify-between mt-4">
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Cancel
-                </button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  type="submit"
-                  onClick={addFlashcard}
-                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-all"
-                >
-                  Add
-                </motion.button>
-              </div>
-            </form>
+            <p><strong>Q:</strong> {card.question}</p>
+            <p><strong>A:</strong> {card.answer}</p>
+            <button
+              onClick={() => deleteFlashcard(card._id)}
+              className="mt-2 px-4 py-2 bg-red-500 text-white rounded"
+            >
+              Delete
+            </button>
           </motion.div>
-        </div>
-      )}
-    </>
+        ))}
+      </div>
+    </div>
   );
 };
 
-export default AddFlashCard;
+export default FlashcardApp;
