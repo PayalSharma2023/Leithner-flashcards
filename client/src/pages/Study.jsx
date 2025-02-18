@@ -1,12 +1,14 @@
-import React from 'react'
-import Cards from './Cards'
+import React from "react";
+import Cards from "./Cards";
+import Flashcards from "../components/flashcard/flashcards";
 
 const Study = () => {
   return (
     <div>
-      <Cards/>
+      <Cards />
+      <Flashcards />
     </div>
-  )
-}
+  );
+};
 
-export default Study
+export default Study;

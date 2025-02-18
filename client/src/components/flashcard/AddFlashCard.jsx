@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-
+import axios from "axios";
+const API_URL = "http://localhost:3000/flashcards";
+// eslint-disable-next-line react/prop-types
 const AddFlashCard = ({ handler }) => {
   const [currentCards, setCurrentCards] = useState([]);
   const [textAreaFront, setTextAreaFront] = useState("");
   const [textAreaBack, setTextAreaBack] = useState("");
   const [frontError, setFrontError] = useState("");
   const [backError, setBackError] = useState("");
+  const [question, setQuestion] = useState("");
+    const [answer, setAnswer] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
   const validate = () => {
@@ -24,9 +28,8 @@ const AddFlashCard = ({ handler }) => {
     }
     return isError;
   };
-
-  const handleAdd = (event) => {
-    event.preventDefault();
+  const addFlashcard = async (e) => {
+    e.preventDefault();
     if (!validate()) {
       const newCard = { front: textAreaFront, back: textAreaBack };
       setCurrentCards([...currentCards, newCard]);
@@ -35,8 +38,11 @@ const AddFlashCard = ({ handler }) => {
       setTextAreaBack("");
       setIsOpen(false);
     }
+    if (!question || !answer) return;
+    await axios.post(API_URL, { question, answer });
+    setQuestion("");
+    setAnswer("");
   };
-
   return (
     <>
       {/* Button to open modal */}
@@ -97,7 +103,7 @@ const AddFlashCard = ({ handler }) => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   type="submit"
-                  onClick={handleAdd}
+                  onClick={addFlashcard}
                   className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-all"
                 >
                   Add
