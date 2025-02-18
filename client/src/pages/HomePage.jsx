@@ -1,99 +1,55 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import "tailwindcss/tailwind.css";
+import { useState, useEffect } from "react";
+import { FiSun, FiMoon } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
-const API_URL = "http://localhost:3000/flashcards";
-
-function HomePage() {
-  const [flashcards, setFlashcards] = useState([]);
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+const HomePage = () => {
+  const navigate = useNavigate();
+  const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
 
   useEffect(() => {
-    fetchFlashcards();
-  }, []);
-
-  const fetchFlashcards = async () => {
-    const res = await axios.get(API_URL);
-    setFlashcards(res.data);
-  };
-
-  const addFlashcard = async () => {
-    if (!question || !answer) return;
-    await axios.post(API_URL, { question, answer });
-    setQuestion("");
-    setAnswer("");
-    fetchFlashcards();
-  };
-
-  const updateFlashcard = async (id, correct) => {
-    await axios.put(`${API_URL}/${id}`, { correct });
-    fetchFlashcards();
-  };
-
-  const deleteFlashcard = async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
-    fetchFlashcards();
-  };
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-5 bg-gray-100">
-      <h1 className="text-2xl font-bold mb-4">Leitner Flashcards</h1>
-      <div className="mb-4">
-        <input
-          className="border p-2 mr-2"
-          type="text"
-          placeholder="Question"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-        />
-        <input
-          className="border p-2 mr-2"
-          type="text"
-          placeholder="Answer"
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-        />
-        <button
-          className="bg-green-500 text-white px-4 py-2 rounded"
-          onClick={addFlashcard}
-        >
-          Add
+    <div className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 bg-background text-text">
+
+      {/* Theme Toggle */}
+      <button
+        onClick={() => setDarkMode(!darkMode)}
+        className="absolute top-5 right-5 p-3 rounded-full transition-all duration-300 hover:bg-secondary/20"
+      >
+        {darkMode ? <FiSun className="text-yellow-400 text-2xl" /> : <FiMoon className="text-gray-500 text-2xl" />}
+      </button>
+
+      {/* Hero Section */}
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center px-6">
+        <h1 className="text-4xl font-bold md:text-6xl text-primary">
+          Master Your Learning
+        </h1>
+        <p className="mt-4 text-lg text-secondary">
+          Use the **Leitner System** to memorize anything efficiently.
+        </p>
+      </motion.div>
+
+      {/* Buttons */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="mt-8 flex space-x-6">
+        <button onClick={() => navigate("/create")} className="px-6 py-3 bg-primary text-white rounded-lg text-lg font-semibold hover:bg-secondary transition-all duration-300">
+          Create Flashcard
         </button>
-      </div>
-      {flashcards.map((card) => (
-        <div key={card._id} className="bg-white p-5 shadow-md rounded-lg w-96 mb-4">
-          <p className="font-bold">{card.question}</p>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 mt-2 rounded"
-            onClick={() => alert(card.answer)}
-          >
-            Show Answer
-          </button>
-          <div className="flex mt-3">
-            <button
-              className="bg-green-500 text-white px-4 py-2 mr-2 rounded"
-              onClick={() => updateFlashcard(card._id, true)}
-            >
-              Got it Right
-            </button>
-            <button
-              className="bg-red-500 text-white px-4 py-2 rounded"
-              onClick={() => updateFlashcard(card._id, false)}
-            >
-              Got it Wrong
-            </button>
-            <button
-              className="bg-gray-500 text-white px-4 py-2 ml-2 rounded"
-              onClick={() => deleteFlashcard(card._id)}
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      ))}
+        <button onClick={() => navigate("/study")} className="px-6 py-3 bg-secondary text-white rounded-lg text-lg font-semibold hover:bg-primary transition-all duration-300">
+          Study
+        </button>
+      </motion.div>
+
     </div>
   );
-}
+};
 
 export default HomePage;

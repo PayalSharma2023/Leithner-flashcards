@@ -33,7 +33,7 @@ exports.updateFlashcard = async (req, res) => {
     }
 
     if (correct) {
-      card.box = Math.min(5, card.box + 1); // Move to next box
+      card.box = Math.min(3, card.box + 1); // Move to next box
     } else {
       card.box = 1; // Reset to Box 1
     }

@@ -7,14 +7,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        bgc: {
-          400: "#650743",
-          300: "#7F265B",
-        },
-        yellow: {
-          200: "#Ffff00"
-        }
-      }
+        primary: "var(--color-primary)",
+        secondary: "var(--color-secondary)",
+        background: "var(--color-background)",
+        text: "var(--color-text)",
+      },
     },
   },
   plugins: [],

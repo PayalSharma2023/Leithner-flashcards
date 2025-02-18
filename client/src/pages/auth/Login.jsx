@@ -30,7 +30,7 @@ const Login = () => {
     try {
       // Make the login API call
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URI}/auth/login`,
+        `http://localhost:3000/auth/login`,
         formData
       );
       const token = response.data.token;
