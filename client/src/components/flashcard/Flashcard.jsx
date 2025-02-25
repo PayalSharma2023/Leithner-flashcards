@@ -19,6 +19,11 @@ const Flashcard = ({ card, updateCard }) => {
           </button>
         </div>
       )}
+     <div>
+  {new Date(card.nextReview).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+</div>
+
+      <div>{card.box}</div>
     </div>
   );
 };

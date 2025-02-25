@@ -10,8 +10,27 @@ export const useFetchFlashcards = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(); // Initial fetch
+
+    const interval = setInterval(() => {
+      const now = new Date();
+
+      flashcards.forEach((card) => {
+        const reviewTime = new Date(card.nextReview);
+
+        // Check if current time matches review time (down to the minute)
+        if (
+          now.getHours() === reviewTime.getHours() &&
+          now.getMinutes() === reviewTime.getMinutes()
+        ) {
+          fetchData(); // Refetch flashcards
+          console.log(`Refetching flashcards at: ${now.toLocaleTimeString()}`);
+        }
+      });
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, [flashcards]);
 
   return { flashcards, refetch: fetchData };
 };

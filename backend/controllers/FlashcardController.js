@@ -39,7 +39,7 @@ exports.updateFlashcard = async (req, res) => {
       card.box = 1; // Reset to Box 1
     }
 
-    card.nextReview = new Date(Date.now() + card.box * 60 * 60 * 1000); // Spaced repetition
+    card.nextReview = new Date(Date.now() + card.box * 10 * 1000); // Spaced repetition
     await card.save();
     res.json(card);
   } catch (error) {
