@@ -4,7 +4,7 @@ const Flashcard = ({ card, updateCard }) => {
   const [showAnswer, setShowAnswer] = useState(false);
 
   return (
-    <div className="border p-4 rounded-lg shadow-md bg-white">
+    <div className="border p-4 min-h-[20vh] rounded-lg shadow-md bg-white">
       <p className="text-xl font-semibold">{showAnswer ? card.answer : card.question}</p>
       <button onClick={() => setShowAnswer(!showAnswer)} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
         {showAnswer ? "Hide Answer" : "Show Answer"}

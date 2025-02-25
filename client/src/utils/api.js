@@ -12,9 +12,9 @@ export const getFlashcards = async () => {
   }
 };
 
-export const updateFlashcard = async (id) => {
+export const updateFlashcard = async (id, correct) => {
     try {
-      const response = await axios.post(`${API_URL}/${id}`);
+      const response = await axios.put(`${API_URL}/${id}`, {correct});
       return response.data;
     } catch (error) {
       console.error("Error fetching flashcards:", error);

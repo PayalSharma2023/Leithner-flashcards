@@ -4,7 +4,7 @@ import ProgressBar from "../components/flashcard/ProgressBar";
 import { updateFlashcard } from "../utils/api";
 
 const Study = () => {
-  const flashcards = useFetchFlashcards();
+  const {flashcards, refetch} = useFetchFlashcards();
   
   // Ensure flashcards is an array before accessing it
   if (!Array.isArray(flashcards)) {
@@ -14,9 +14,10 @@ const Study = () => {
   const dueFlashcards = flashcards.filter(card => new Date(card.nextReview) <= new Date());
   console.log(flashcards)
 
-  const handleUpdateCard = (cardId) => {
+  const handleUpdateCard = (cardId, correct) => {
     // Pass card ID to updateFlashcard for the specific card
-    updateFlashcard(cardId);
+    updateFlashcard(cardId, correct);
+    refetch()
   };
 
   return (

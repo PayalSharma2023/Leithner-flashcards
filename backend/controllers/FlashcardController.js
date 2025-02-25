@@ -31,14 +31,15 @@ exports.updateFlashcard = async (req, res) => {
     if (!card) {
       return res.status(404).json({ error: "Flashcard not found" });
     }
+    console.log(correct)
 
-    if (correct) {
+    if (correct == true) {
       card.box = Math.min(3, card.box + 1); // Move to next box
     } else {
       card.box = 1; // Reset to Box 1
     }
 
-    card.nextReview = new Date(Date.now() + card.box * 24 * 60 * 60 * 1000); // Spaced repetition
+    card.nextReview = new Date(Date.now() + card.box * 60 * 60 * 1000); // Spaced repetition
     await card.save();
     res.json(card);
   } catch (error) {

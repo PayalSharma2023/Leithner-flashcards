@@ -87,7 +87,7 @@ const Login = () => {
         {authState.token ? (
           <button
             onClick={handleLogout}
-            className="w-full py-2 px-4 bg-bgc-400 text-white rounded"
+            className="w-full py-2 px-4 bg-gray-400 text-white rounded"
           >
             Logout
           </button>
@@ -138,7 +138,7 @@ const Login = () => {
               className={`w-full py-2 px-4 mt-4 rounded text-white focus:outline-none ${
                 isLoading
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-bgc-400 hover:bg-bgc-300"
+                  : "bg-gray-400 hover:bg-bgc-300"
               }`}
               disabled={isLoading}
             >
