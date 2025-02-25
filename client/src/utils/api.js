@@ -4,6 +4,8 @@ const API_URL = import.meta.env.VITE_BACKEND_URI;
 
 export const getFlashcards = async () => {
   try {
+    console.log("Backend URI:", API_URL);
+
     const response = await axios.get(`${API_URL}/flashcards`);
     return response.data;
   } catch (error) {

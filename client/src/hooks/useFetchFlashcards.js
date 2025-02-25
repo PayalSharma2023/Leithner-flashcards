@@ -5,8 +5,10 @@ export const useFetchFlashcards = () => {
   const [flashcards, setFlashcards] = useState([]);
 
   const fetchData = async () => {
-    const data = await getFlashcards();
-    setFlashcards(data);
+    if (flashcards.length === 0) {  // Only fetch if no data
+      const data = await getFlashcards();
+      setFlashcards(data);
+    }
   };
 
   useEffect(() => {
@@ -14,23 +16,28 @@ export const useFetchFlashcards = () => {
 
     const interval = setInterval(() => {
       const now = new Date();
+      let shouldRefetch = false;
 
       flashcards.forEach((card) => {
         const reviewTime = new Date(card.nextReview);
-
-        // Check if current time matches review time (down to the minute)
+        
+        // Check if any card is due for review
         if (
           now.getHours() === reviewTime.getHours() &&
           now.getMinutes() === reviewTime.getMinutes()
         ) {
-          fetchData(); // Refetch flashcards
-          console.log(`Refetching flashcards at: ${now.toLocaleTimeString()}`);
+          shouldRefetch = true;
         }
       });
+
+      if (shouldRefetch) {
+        fetchData();
+        console.log(`Refetching flashcards at: ${now.toLocaleTimeString()}`);
+      }
     }, 60000); // Check every minute
 
     return () => clearInterval(interval); // Cleanup interval on unmount
-  }, [flashcards]);
+  }, [flashcards.length]); // Depend only on flashcard length, not content
 
   return { flashcards, refetch: fetchData };
 };
